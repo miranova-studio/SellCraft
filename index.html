@@ -377,10 +377,37 @@
 
 <div class="container">
 
+  <!-- まずはここだけ -->
+  <div class="card full-width" style="border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 24px var(--accent-glow);">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">✏️</span> まずはここだけ（2つ入れればOK）</div>
+    </div>
+    <div class="card-body">
+        <div class="form-row">
+          <label>サイト名 <span class="req">＊</span></label>
+          <select id="site_name">
+            <option value="">選択してください</option>
+            <option value="ココナラ">ココナラ</option>
+            <option value="クラウドワークス">クラウドワークス</option>
+            <option value="ランサーズ">ランサーズ</option>
+            <option value="SKIMA">SKIMA</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>出品したい商品の説明 <span class="req">＊</span></label>
+          <textarea id="product_description" placeholder="例：ロゴ作成。シンプルでおしゃれなロゴをCanvaで作成します。ビジネス・副業・SNS用など幅広く対応。" rows="2"></textarea>
+        </div>
+      <div class="actions" style="margin-top:6px;">
+        <button class="btn btn-primary" onclick="generateAndGo()">🚀 作成してManusを開く</button>
+      </div>
+      <div class="placeholder-hint" style="margin-top:8px;">💡 下の項目はすべて任意です。空欄はManusが競合分析から決めてくれます。こだわりがある項目だけ入れてください</div>
+    </div>
+  </div>
+
   <!-- ざっくり入力（任意） -->
   <div class="card full-width">
     <div class="card-header">
-      <div class="card-title"><span class="icon">⚡</span> ざっくり入力（使わなくてもOK）</div>
+      <div class="card-title"><span class="icon">⚡</span> ざっくり入力（任意・AIに下の欄を埋めてもらう）</div>
     </div>
     <div class="card-body">
       <div class="tips" style="margin-bottom:10px;">
@@ -407,7 +434,7 @@
   <!-- 基本情報 -->
   <div class="card full-width">
     <div class="card-header">
-      <div class="card-title"><span class="icon">🔍</span> 検索条件</div>
+      <div class="card-title"><span class="icon">🔍</span> 検索条件（任意）</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="clear-btn" onclick="clearSection('basic')">クリア</button>
         <label class="save-toggle">
@@ -419,16 +446,6 @@
     </div>
     <div class="card-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="form-row">
-          <label>サイト名 <span class="req">＊</span></label>
-          <select id="site_name">
-            <option value="">選択してください</option>
-            <option value="ココナラ">ココナラ</option>
-            <option value="クラウドワークス">クラウドワークス</option>
-            <option value="ランサーズ">ランサーズ</option>
-            <option value="SKIMA">SKIMA</option>
-          </select>
-        </div>
         <div class="form-row">
           <label>大ジャンル（空欄ならAIが判断）</label>
           <select id="genre_major_select" onchange="onGenreMajorChange(this)">
@@ -451,10 +468,6 @@
         </div>
       </div>
       <div style="margin-top:12px;">
-        <div class="form-row">
-          <label>出品したい商品の説明 <span class="req">＊</span></label>
-          <textarea id="product_description" placeholder="例：ロゴ作成。シンプルでおしゃれなロゴをCanvaで作成します。ビジネス・副業・SNS用など幅広く対応。" rows="2"></textarea>
-        </div>
       </div>
       <div style="margin-top:12px;">
         <label>収集件数</label>
@@ -470,7 +483,7 @@
   <!-- 自分のこと -->
   <div class="card">
     <div class="card-header">
-      <div class="card-title"><span class="icon">👤</span> 出品者情報</div>
+      <div class="card-title"><span class="icon">👤</span> 出品者情報（任意）</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="clear-btn" onclick="clearSection('about')">クリア</button>
         <label class="save-toggle">
@@ -544,7 +557,7 @@
   <!-- ターゲット・戦略 -->
   <div class="card">
     <div class="card-header">
-      <div class="card-title"><span class="icon">🎯</span> ターゲット・戦略</div>
+      <div class="card-title"><span class="icon">🎯</span> ターゲット・戦略（任意）</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="clear-btn" onclick="clearSection('strategy')">クリア</button>
         <label class="save-toggle">
