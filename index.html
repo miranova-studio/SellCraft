@@ -381,6 +381,7 @@
   <div class="card full-width" style="border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 24px var(--accent-glow);">
     <div class="card-header">
       <div class="card-title"><span class="icon">✏️</span> まずはここだけ（2つ入れればOK）</div>
+      <button class="clear-btn" onclick="clearSection('top')">クリア</button>
     </div>
     <div class="card-body">
         <div class="form-row">
@@ -408,6 +409,7 @@
   <div class="card full-width">
     <div class="card-header">
       <div class="card-title"><span class="icon">⚡</span> ざっくり入力（任意・AIに下の欄を埋めてもらう）</div>
+      <button class="clear-btn" onclick="clearSection('quick')">クリア</button>
     </div>
     <div class="card-body">
       <div class="tips" style="margin-bottom:10px;">
@@ -804,7 +806,9 @@ function loadSaved() {
 
 function clearSection(sec) {
   const keyMap = {
-    basic: ['genre_major','product_description'],
+    top: ['product_description'],
+    quick: ['quick_text','quick_answer'],
+    basic: ['genre_major'],
     about: SAVE_KEYS.about,
     strategy: SAVE_KEYS.strategy
   };
@@ -813,10 +817,11 @@ function clearSection(sec) {
     if (el) el.value = '';
   });
   // カスタム入力欄を非表示に
-  ['price_range_custom','revision_policy_custom','tone_custom','delivery_speed_custom'].forEach(id => {
+  if (sec === 'about' || sec === 'strategy') ['price_range_custom','revision_policy_custom','tone_custom','delivery_speed_custom'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
+  if (sec === 'top') document.getElementById('site_name').selectedIndex = 0;
   // 大ジャンルのセレクトとカスタム入力をリセット
   if (sec === 'basic') {
     const genreSelect = document.getElementById('genre_major_select');
@@ -838,7 +843,7 @@ function hideResetModal() {
   document.getElementById('resetModal').classList.remove('show');
 }
 function resetAll() {
-  const allKeys = ['genre_major','product_description',...SAVE_KEYS.about,...SAVE_KEYS.strategy,...SAVE_KEYS.config];
+  const allKeys = ['genre_major','product_description','quick_text','quick_answer',...SAVE_KEYS.about,...SAVE_KEYS.strategy,...SAVE_KEYS.config];
   allKeys.forEach(key => {
     const el = document.getElementById(key);
     if (el) el.value = '';
