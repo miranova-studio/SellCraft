@@ -422,10 +422,11 @@
       </div>
       <div class="form-row">
         <label>② このボタンを押す（AIへのお願い文がコピーされます）</label>
+        <div class="placeholder-hint" style="margin-top:0;">AIから「強みや経歴は？」と1回質問が来るので、あれば簡単に答えてください（なければ「なし」でOK）</div>
         <div><button class="btn btn-secondary" onclick="copyQuickPrompt()">📋 AIへのお願い文をコピー</button></div>
       </div>
       <div class="form-row">
-        <label style="text-transform:none;">③ ChatGPTかClaudeを開いて貼り付け、送信する</label>
+        <label style="text-transform:none;">③ ChatGPTかClaudeを開いて貼り付け、送信する → 質問に答える</label>
         <div class="placeholder-hint" style="margin-top:0;">Windows：Ctrl＋V ／ Mac：⌘＋V で貼り付け → 送信</div>
       </div>
       <div class="form-row">
@@ -929,8 +930,15 @@ function copyQuickPrompt() {
   const q = document.getElementById('quick_text').value.trim();
   if (!q) { showToast('⚠️ 出したいサービスを一言で書いてください'); return; }
   const p = `次の「出したいサービス」をもとに、出品ページ作成ツールの入力欄を埋めてください。
-書かれていないことは、そのサービスで一般的に売れやすい内容を推測して埋めてください。
-答えは下のJSONだけを返してください（説明文や\`\`\`は不要）。
+【進め方】
+1. まず私に、次の質問を1回だけしてください。JSONはまだ出さないでください。
+   「強み・経歴・実績・資格などがあれば、簡単に教えてください（箇条書きでOK）。特になければ『なし』と答えてください」
+2. 私の答えを受け取ったら、下のJSONを作って返してください。
+
+【ルール】
+・"strength"（強み・経歴）には、私が質問に答えた内容と、あなたが私について確実に知っている事実だけを書くこと。作り話・推測・盛った表現は禁止。私が「なし」と答え、確かな事実もなければ "" （空欄）にすること
+・それ以外の項目で書かれていないことは、そのサービスで一般的に売れやすい内容を推測して埋めてよい
+・JSONを返すときは、JSONだけを返すこと（説明文や\`\`\`は不要）
 
 出したいサービス：${q}
 
@@ -1141,7 +1149,7 @@ ${siteName}で「${genreMajor || productDescription}」に合う検索を行い�
 ・出品経験レベル：${experience || '未記入（AIが判断）'}
 ・想定ターゲット：${target || '未記入（AIが判断）'}
 ・想定ターゲットの属性：${targetAttribute || '未記入（AIが判断）'}
-・強み・経歴・アピールポイント：${strength || '未記入（AIが判断）'}
+・強み・経歴・アピールポイント：${strength || '未記入（経歴・実績・資格は作らないこと。出品文でも具体的な経歴には触れず、サービス内容や対応の丁寧さで信頼感を出すこと）'}
 ・希望価格帯：${priceRange || '未記入（AIが判断）'}
 ・納品スピード：${deliverySpeed || '未記入（AIが判断）'}
 ・修正回数の方針：${revisionPolicy || '未記入（AIが判断）'}
