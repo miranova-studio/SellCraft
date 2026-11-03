@@ -373,6 +373,7 @@
   <h1>SellCraft</h1>
   <p style="font-size:12px;color:#6666aa;margin-top:2px;margin-bottom:4px;">出品設計アシスタント</p>
   <p>入れるのは2つだけ。あとはAIが決めてくれます</p>
+  <p style="font-size:10px;opacity:0.5;">ver 2026.11.03-c</p>
 </div>
 
 <div class="container">
@@ -1104,7 +1105,7 @@ function copyProfileInterview() {
 function applyProfileAnswer() {
   const d = parseLoose(document.getElementById('profile_answer').value || '');
   const msg = document.getElementById('profile_answer_msg');
-  if (!d) { msg.textContent = '⚠️ 読み取れませんでした（コード：P1）。AIの最後の答えをそのまま全部貼ってください'; showToast('⚠️ 読み取れませんでした（P1）', 4000); return; }
+  if (!d) { const raw0 = document.getElementById('profile_answer').value; msg.textContent = '⚠️ 読み取れませんでした（コード：P2／' + raw0.length + '文字／先頭：' + Array.from(raw0.slice(0,6)).map(c=>c.charCodeAt(0).toString(16)).join(' ') + '）'; showToast('⚠️ 読み取れませんでした（P2）', 4000); return; }
   msg.textContent = '✅ 読み取りました。下の欄を確認して「💾 この内容で保存」を押すと保存されます';
   if (d.name) document.getElementById('profile_name').value = d.name;
   ['strength','win_point','avoid_patterns','exclusions','usual_target'].forEach(k => { if (d[k]) document.getElementById(k).value = d[k]; });
@@ -1198,7 +1199,20 @@ function parseLoose(raw) {
       if (k === id || names.includes(k)) { if (!d[id]) d[id] = v; break; }
     }
   });
-  return Object.keys(d).length ? d : null;
+  if (Object.keys(d).length) return d;
+  // 最後の手段：既知の項目名を目印に、次の項目名までを値として切り出す（引用符や改行の形に左右されない）
+  const keys = Object.keys(QUICK_FIELDS);
+  const re = new RegExp('[\\s,{]*[^A-Za-z_]?(' + keys.join('|') + ')[^:：]{0,3}[:：]', 'g');
+  const hits = []; let mt;
+  while ((mt = re.exec(t)) !== null) hits.push({ k: mt[1], start: mt.index, end: re.lastIndex });
+  const out = {};
+  hits.forEach((h, i) => {
+    const stop = i + 1 < hits.length ? hits[i + 1].start : t.length;
+    let v = t.slice(h.end, stop).replace(/[}\]]\s*$/, '').trim().replace(/,\s*$/, '').trim();
+    v = v.replace(/^["'“”「]+|["'“”」]+$/g, '').trim();
+    if (v && !out[h.k]) out[h.k] = v;
+  });
+  return Object.keys(out).length ? out : null;
 }
 
 function applyQuickAnswer() {
