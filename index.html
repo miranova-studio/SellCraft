@@ -377,6 +377,103 @@
 
 <div class="container">
 
+  <!-- プロフィール -->
+  <div class="card full-width">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">👤</span> プロフィール（最初に1回作って保存）</div>
+    </div>
+    <div class="card-body">
+      <div class="tips" style="margin-bottom:12px;">
+        強み・経歴など<strong>「自分について」の情報</strong>を保存しておく場所です。1回作れば、毎回自動でManusに送られます。<br>
+        「Web制作用」「デザイン用」のように、いくつでも作って使い分けられます。
+      </div>
+      <div class="form-row">
+        <label>使うプロフィール</label>
+        <select id="profile_select" onchange="onProfileSelect()"></select>
+        <div class="placeholder-hint" id="profile_status"></div>
+        <div><button class="btn btn-secondary" style="margin-top:8px;" onclick="newProfile()">＋ プロフィールを新しく作る</button></div>
+      </div>
+      <details id="profile_details" style="margin-top:10px;">
+        <summary style="cursor:pointer;font-weight:700;color:#c084fc;padding:6px 0;">✏️ プロフィールを作る・直す（開く）</summary>
+        <div style="margin-top:12px;">
+          <div class="tips" style="margin-bottom:12px;">
+            <strong>AIにインタビューしてもらって作る方法</strong>（自分で直接入れてもOK）<br>
+            ① 下のボタンで質問文をコピー → ② ChatGPTかClaudeに貼って送信 → ③ 質問に答える → ④ 最後に出てきた答えを全部コピーして下に貼る → ⑤「読み取る」
+          </div>
+          <div class="form-row">
+            <div><button class="btn btn-secondary" onclick="copyProfileInterview()">📋 AIへの質問文をコピー</button></div>
+          </div>
+          <div class="form-row">
+            <label>AIの答え（そのまま全部貼る）</label>
+            <textarea id="profile_answer" rows="3" placeholder="AIが最後に出した答えを、そのまま全部貼ってください"></textarea>
+            <div><button class="btn btn-primary" style="margin-top:6px;" onclick="applyProfileAnswer()">↓ 読み取る</button></div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+          <div class="form-row">
+            <label>プロフィールの名前 <span class="req">＊</span></label>
+            <input type="text" id="profile_name" placeholder="例：Web制作用・デザイン用・メイン">
+          </div>
+      <div class="form-row">
+        <label>強み・経歴・アピールポイント</label>
+        <textarea id="strength" placeholder="例：シンプルデザインが得意・Canva歴3年" rows="4"></textarea>
+      </div>
+      <div class="form-row">
+        <label>出品経験レベル</label>
+        <select id="experience">
+          <option value="">選択してください</option>
+          <option value="初出品">初出品</option>
+          <option value="販売実績あり（〜10件）">販売実績あり（〜10件）</option>
+          <option value="販売実績あり（11件以上）">販売実績あり（11件以上）</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>自分らしさ・差別化の軸</label>
+        <textarea id="win_point" placeholder="例：デザインの意図を言語化して伝える・他にないオリジナル感・修正対応の丁寧さ" rows="2"></textarea>
+      </div>
+      <div class="form-row">
+        <label>文章のトーン</label>
+        <select id="tone" onchange="onToneChange(this)">
+          <option value="">選択してください</option>
+          <option value="プロフェッショナル・信頼感重視">プロフェッショナル・信頼感重視</option>
+          <option value="親しみやすい・フレンドリー">親しみやすい・フレンドリー</option>
+          <option value="やさしい・温かみのある">やさしい・温かみのある</option>
+          <option value="簡潔・スマート">簡潔・スマート</option>
+          <option value="custom">自由入力する</option>
+        </select>
+        <input type="text" id="tone_custom" placeholder="例：カジュアルだけど信頼感がある" style="margin-top:6px;display:none;">
+      </div>
+      <div class="form-row">
+        <label>避けたい表現・失敗パターン</label>
+        <textarea id="avoid_patterns" placeholder="例：誇大表現、過度な売り込み文句、長すぎる箇条書き" rows="2"></textarea>
+      </div>
+      <div class="form-row">
+        <label>基本的に対応しないこと</label>
+        <textarea id="exclusions" placeholder="例：両面対応はしない・急ぎ対応はしない・ロゴ作成は含まない" rows="3"></textarea>
+      </div>
+      <div class="form-row">
+        <label>いつも相手にしたい人（任意）</label>
+        <textarea id="usual_target" placeholder="例：女性の個人事業主・サロンオーナー・副業を始めた方（商品ごとのターゲットは毎回決めます）" rows="2"></textarea>
+      </div>
+          <div class="actions" style="margin-top:8px;">
+            <button class="btn btn-save" onclick="saveProfile()">💾 この内容で保存</button>
+            <button class="btn btn-danger" onclick="deleteProfile()">🗑️ このプロフィールを削除</button>
+          </div>
+          <details style="margin-top:14px;">
+            <summary style="cursor:pointer;font-size:13px;color:var(--text-sub);">別のパソコン・ブラウザに移す（書き出し・読み込み）</summary>
+            <div class="placeholder-hint" style="margin:8px 0;">プロフィールはこのブラウザの中にだけ保存されます。「書き出す」でコピーした文字を、別のパソコンのSellCraftで「読み込む」の欄に貼れば移せます。メモ帳などに貼って控えておくと、消えたときも戻せます。</div>
+            <div class="actions">
+              <button class="btn btn-secondary" onclick="exportProfiles()">📤 全部を書き出す（コピー）</button>
+            </div>
+            <textarea id="profile_import" rows="2" style="margin-top:8px;" placeholder="書き出した文字をここに貼って「読み込む」"></textarea>
+            <div class="actions" style="margin-top:6px;">
+              <button class="btn btn-secondary" onclick="importProfiles()">📥 読み込む</button>
+            </div>
+          </details>
+        </div>
+      </details>
+    </div>
+  </div>
+
   <!-- かんたん作成 -->
   <div class="card full-width" style="border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 24px var(--accent-glow);">
     <div class="card-header">
@@ -398,6 +495,7 @@
           <label>出品したい商品の説明 <span class="req">＊</span></label>
           <textarea id="product_description" placeholder="例：ロゴ作成。シンプルでおしゃれなロゴをCanvaで作成します。ビジネス・副業・SNS用など幅広く対応。" rows="2"></textarea>
         </div>
+      <div class="placeholder-hint" id="top_profile_status" style="margin:0 0 8px;"></div>
       <div class="actions" style="margin-top:6px;">
         <button class="btn btn-primary" onclick="generateAndGo()">🚀 作成してManusを開く</button>
       </div>
@@ -421,11 +519,11 @@
       </div>
       <div class="form-row">
         <label>② このボタンを押す（AIへのお願い文がコピーされます）</label>
-        <div class="placeholder-hint" style="margin-top:0;">AIから「強みや経歴は？」と1回質問が来るので、あれば簡単に答えてください（なければ「なし」でOK）</div>
+        <div class="placeholder-hint" style="margin-top:0;">選んでいるプロフィールも一緒にAIに伝わるので、自分に合った内容で埋まります</div>
         <div><button class="btn btn-secondary" onclick="copyQuickPrompt()">📋 AIへのお願い文をコピー</button></div>
       </div>
       <div class="form-row">
-        <label style="text-transform:none;">③ ChatGPTかClaudeを開いて貼り付け、送信する → 質問に答える</label>
+        <label style="text-transform:none;">③ ChatGPTかClaudeを開いて貼り付け、送信する</label>
         <div class="placeholder-hint" style="margin-top:0;">Windows：Ctrl＋V ／ Mac：⌘＋V で貼り付け → 送信</div>
       </div>
       <div class="form-row">
@@ -491,7 +589,7 @@
   <!-- 自分のこと -->
   <div class="card">
     <div class="card-header">
-      <div class="card-title"><span class="icon">👤</span> 出品者情報（任意）</div>
+      <div class="card-title"><span class="icon">💰</span> 今回の条件（任意）</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="clear-btn" onclick="clearSection('about')">クリア</button>
         <label class="save-toggle">
@@ -502,19 +600,6 @@
       </div>
     </div>
     <div class="card-body">
-      <div class="form-row">
-        <label>出品経験レベル</label>
-        <select id="experience">
-          <option value="">選択してください</option>
-          <option value="初出品">初出品</option>
-          <option value="販売実績あり（〜10件）">販売実績あり（〜10件）</option>
-          <option value="販売実績あり（11件以上）">販売実績あり（11件以上）</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>強み・経歴・アピールポイント</label>
-        <textarea id="strength" placeholder="例：シンプルデザインが得意・Canva歴3年" rows="2"></textarea>
-      </div>
       <div class="form-row">
         <label>希望価格帯</label>
         <select id="price_range" onchange="onPriceRangeChange(this)">
@@ -565,7 +650,7 @@
   <!-- ターゲット・戦略 -->
   <div class="card">
     <div class="card-header">
-      <div class="card-title"><span class="icon">🎯</span> ターゲット・戦略（任意）</div>
+      <div class="card-title"><span class="icon">🎯</span> 今回のターゲット（任意）</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="clear-btn" onclick="clearSection('strategy')">クリア</button>
         <label class="save-toggle">
@@ -577,7 +662,7 @@
     </div>
     <div class="card-body">
       <div class="form-row">
-        <label>想定ターゲット</label>
+        <label>想定ターゲット（空欄ならプロフィールとManusの分析から決めます）</label>
         <textarea id="target" placeholder="例：フリーランス初心者・副業を始めた方" rows="2"></textarea>
       </div>
       <div class="form-row">
@@ -585,32 +670,8 @@
         <textarea id="target_attribute" placeholder="例：年齢・職業・状況など" rows="2"></textarea>
       </div>
       <div class="form-row">
-        <label>文章のトーン</label>
-        <select id="tone" onchange="onToneChange(this)">
-          <option value="">選択してください</option>
-          <option value="プロフェッショナル・信頼感重視">プロフェッショナル・信頼感重視</option>
-          <option value="親しみやすい・フレンドリー">親しみやすい・フレンドリー</option>
-          <option value="やさしい・温かみのある">やさしい・温かみのある</option>
-          <option value="簡潔・スマート">簡潔・スマート</option>
-          <option value="custom">自由入力する</option>
-        </select>
-        <input type="text" id="tone_custom" placeholder="例：カジュアルだけど信頼感がある" style="margin-top:6px;display:none;">
-      </div>
-      <div class="form-row">
-        <label>競合と差別化したい点</label>
-        <textarea id="win_point" placeholder="例：デザインの意図を言語化して伝える・他にないオリジナル感・修正対応の丁寧さ" rows="2"></textarea>
-      </div>
-      <div class="form-row">
         <label>参考にしたい競合のURL（任意）</label>
         <textarea id="ref_urls" placeholder="例：https://coconala.com/services/...（複数ある場合は改行して入力）" rows="2"></textarea>
-      </div>
-      <div class="form-row">
-        <label>避けたい表現・失敗パターン（任意）</label>
-        <textarea id="avoid_patterns" placeholder="例：誇大表現、過度な売り込み文句、長すぎる箇条書き" rows="2"></textarea>
-      </div>
-      <div class="form-row">
-        <label>除外・対応不可項目</label>
-        <textarea id="exclusions" placeholder="例：両面対応はしない・急ぎ対応はしない・ロゴ作成は含まない" rows="3"></textarea>
       </div>
     </div>
   </div>
@@ -720,7 +781,7 @@
 <div class="modal-overlay" id="resetModal">
   <div class="modal">
     <h3>🗑️ 全て初期化しますか？</h3>
-    <p>入力した内容と保存した固定情報が<br>全て消えます。<br>この操作は元に戻せません。</p>
+    <p>入力した内容と保存した固定情報が<br>全て消えます（👤プロフィールは消えません）。<br>この操作は元に戻せません。</p>
     <div class="modal-btns">
       <button class="btn btn-danger" onclick="resetAll()">初期化する</button>
       <button class="btn btn-secondary" onclick="hideResetModal()">キャンセル</button>
@@ -730,8 +791,8 @@
 
 <script>
 const SAVE_KEYS = {
-  about: ['experience','strength','price_range','price_range_custom','delivery_format','delivery_speed','delivery_speed_custom','revision_policy','revision_policy_custom'],
-  strategy: ['target','target_attribute','tone','tone_custom','win_point','ref_urls','avoid_patterns','exclusions'],
+  about: ['price_range','price_range_custom','delivery_format','delivery_speed','delivery_speed_custom','revision_policy','revision_policy_custom'],
+  strategy: ['target','target_attribute','ref_urls'],
   config: ['output_mode','gas_url','sheet_url']
 };
 
@@ -823,7 +884,7 @@ function clearSection(sec) {
     if (el) el.value = '';
   });
   // カスタム入力欄を非表示に
-  if (sec === 'about' || sec === 'strategy') ['price_range_custom','revision_policy_custom','tone_custom','delivery_speed_custom'].forEach(id => {
+  if (sec === 'about' || sec === 'strategy') ['price_range_custom','revision_policy_custom','delivery_speed_custom'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -870,6 +931,7 @@ function resetAll() {
     const el = document.getElementById(id);
     if (el) el.checked = false;
   });
+  renderProfileSelect();
   hideResetModal();
   showToast('🗑️ 全て初期化しました');
 }
@@ -925,38 +987,177 @@ function fallbackText(text) {
   ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta);
 }
 
+// ===== プロフィール（自分について・複数保存） =====
+const PROFILE_FIELDS = ['experience','strength','win_point','tone','tone_custom','avoid_patterns','exclusions','usual_target'];
+function getProfiles() { try { return JSON.parse(localStorage.getItem('sc_profiles') || '{}'); } catch(e) { return {}; } }
+function setProfiles(o) { localStorage.setItem('sc_profiles', JSON.stringify(o)); }
+function currentProfileName() { return localStorage.getItem('sc_profile_current') || ''; }
+
+function renderProfileSelect() {
+  const ps = getProfiles(), names = Object.keys(ps), cur = currentProfileName();
+  const sel = document.getElementById('profile_select');
+  sel.innerHTML = '';
+  names.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o); });
+  const none = document.createElement('option'); none.value = ''; none.textContent = names.length ? '（プロフィールを使わない）' : '（まだありません）'; sel.appendChild(none);
+  sel.value = names.includes(cur) ? cur : (names[0] || '');
+  if (!names.length) document.getElementById('profile_details').open = true;
+  fillProfileFields(sel.value);
+  updateProfileStatus();
+}
+function fillProfileFields(name) {
+  const d = getProfiles()[name] || {};
+  document.getElementById('profile_name').value = name || '';
+  PROFILE_FIELDS.forEach(k => { const el = document.getElementById(k); if (el) el.value = d[k] || ''; });
+  document.getElementById('tone_custom').style.display = document.getElementById('tone').value === 'custom' ? 'block' : 'none';
+}
+function updateProfileStatus() {
+  const name = document.getElementById('profile_select').value;
+  const has = name && (getProfiles()[name] || {}).strength;
+  const msg = !name
+    ? '⚠️ プロフィール未設定。上の「👤 プロフィール」を1回作っておくと、出品文があなたらしく具体的になります'
+    : (has ? `✅ プロフィール「${name}」の強み・経歴を使います` : `⚠️ プロフィール「${name}」に強み・経歴が入っていません`);
+  document.getElementById('profile_status').textContent = msg;
+  document.getElementById('top_profile_status').textContent = msg;
+}
+function onProfileSelect() {
+  const name = document.getElementById('profile_select').value;
+  localStorage.setItem('sc_profile_current', name);
+  fillProfileFields(name);
+  updateProfileStatus();
+}
+function saveProfile() {
+  const name = document.getElementById('profile_name').value.trim();
+  if (!name) { showToast('⚠️ プロフィールの名前を入れてください'); return; }
+  const ps = getProfiles(), d = {};
+  PROFILE_FIELDS.forEach(k => { const el = document.getElementById(k); d[k] = el ? el.value : ''; });
+  ps[name] = d; setProfiles(ps);
+  localStorage.setItem('sc_profile_current', name);
+  renderProfileSelect();
+  showToast(`💾 プロフィール「${name}」を保存しました`);
+}
+function newProfile() {
+  document.getElementById('profile_select').value = '';
+  fillProfileFields('');
+  document.getElementById('profile_answer').value = '';
+  document.getElementById('profile_details').open = true;
+  updateProfileStatus();
+  document.getElementById('profile_name').focus();
+  showToast('✏️ 名前と内容を入れて「この内容で保存」を押してください', 3000);
+}
+function deleteProfile() {
+  const name = document.getElementById('profile_select').value;
+  if (!name) { showToast('⚠️ 削除するプロフィールを選んでください'); return; }
+  const btn = event && event.target;
+  if (btn && btn.dataset.confirm !== name) { btn.dataset.confirm = name; btn.textContent = `本当に「${name}」を削除？もう一度押す`; setTimeout(() => { btn.dataset.confirm=''; btn.textContent='🗑️ このプロフィールを削除'; }, 4000); return; }
+  const ps = getProfiles(); delete ps[name]; setProfiles(ps);
+  localStorage.setItem('sc_profile_current', Object.keys(ps)[0] || '');
+  if (btn) { btn.dataset.confirm=''; btn.textContent='🗑️ このプロフィールを削除'; }
+  renderProfileSelect();
+  showToast(`🗑️ 「${name}」を削除しました`);
+}
+function profileSummary() {
+  const g = id => (document.getElementById(id).value || '').trim();
+  const tone = g('tone') === 'custom' ? g('tone_custom') : g('tone');
+  const lines = [['強み・経歴', g('strength')], ['出品経験', g('experience')], ['自分らしさ・差別化の軸', g('win_point')], ['文章のトーン', tone], ['いつも相手にしたい人', g('usual_target')], ['基本的に対応しないこと', g('exclusions')]];
+  return lines.filter(l => l[1]).map(l => `・${l[0]}：${l[1]}`).join('\n');
+}
+function copyProfileInterview() {
+  const p = `あなたはフリーランスの出品ページづくりを手伝うインタビュアーです。
+これから私の「出品者プロフィール」を作ります。このプロフィールは、ココナラなどの出品ページを作るときに毎回使います。
+
+【進め方】
+・下の質問を、1つずつ順番に私に聞いてください（一度に全部聞かない）。
+・あなたが私について確実に知っていることがあれば、「〇〇で合っていますか？」と確認する形で聞いてOKです。
+・私が「なし」「わからない」と答えた項目は空欄にしてください。
+・全部聞き終わったら、最後に下のJSONだけを返してください（説明文や\`\`\`は不要）。
+
+【ルール】
+・私が答えたことと、あなたが私について確実に知っている事実だけを書くこと。作り話・推測・盛った表現は禁止。
+・文章は出品ページにそのまま使える自然な日本語で、短く整えてOK。
+
+【質問】
+1. このプロフィールに付ける名前（例：Web制作用、デザイン用、メイン）
+2. 仕事に関する経歴・経験年数
+3. 資格・受講したスクール・使えるツール
+4. これまでの実績（件数、作ったもの、お客様の声など）
+5. 自分の強み・人から褒められること
+6. 他の出品者と比べた、自分らしさ・こだわり
+7. ココナラなどでの出品経験（初出品／販売実績あり〜10件／11件以上）
+8. 出品ページの文章のトーン（例：やさしい・温かみのある、プロフェッショナル・信頼感重視）
+9. 使いたくない表現・苦手な売り方
+10. 基本的に引き受けない仕事
+11. いつも相手にしたいお客様像
+
+{
+  "name": "プロフィールの名前",
+  "strength": "強み・経歴・実績・資格（2・3・4・5をまとめる）",
+  "experience": "初出品／販売実績あり（〜10件）／販売実績あり（11件以上）のどれか",
+  "win_point": "自分らしさ・差別化の軸",
+  "tone": "文章のトーン",
+  "avoid_patterns": "避けたい表現・失敗パターン",
+  "exclusions": "基本的に対応しないこと",
+  "usual_target": "いつも相手にしたい人"
+}`;
+  copyText(p, '📋 コピーしました！ChatGPTかClaudeに貼って送信してください');
+}
+function applyProfileAnswer() {
+  const d = parseLoose(document.getElementById('profile_answer').value || '');
+  if (!d) { showToast('⚠️ 読み取れませんでした。AIの最後の答えをそのまま全部貼ってください', 4000); return; }
+  if (d.name) document.getElementById('profile_name').value = d.name;
+  ['strength','win_point','avoid_patterns','exclusions','usual_target'].forEach(k => { if (d[k]) document.getElementById(k).value = d[k]; });
+  selectOrCustom('experience', null, d.experience);
+  selectOrCustom('tone', 'tone_custom', d.tone);
+  showToast('✅ 読み取りました。内容を確認して「この内容で保存」を押してください', 4000);
+}
+function exportProfiles() {
+  const ps = getProfiles();
+  if (!Object.keys(ps).length) { showToast('⚠️ 保存したプロフィールがありません'); return; }
+  copyText(JSON.stringify({ sellcraft_profiles: ps }), '📤 コピーしました。メモ帳や別のパソコンのSellCraftに貼ってください');
+}
+function importProfiles() {
+  let d; try { d = JSON.parse(document.getElementById('profile_import').value.trim()); } catch(e) {}
+  const incoming = d && (d.sellcraft_profiles || d);
+  if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) { showToast('⚠️ 読み込めませんでした。書き出した文字をそのまま貼ってください', 4000); return; }
+  const ps = getProfiles(); Object.assign(ps, incoming); setProfiles(ps);
+  document.getElementById('profile_import').value = '';
+  renderProfileSelect();
+  showToast(`📥 ${Object.keys(incoming).length}件のプロフィールを読み込みました`);
+}
+// 旧版で保存していた「出品者情報」を、最初のプロフィール「メイン」に移す
+function migrateOldProfile() {
+  if (localStorage.getItem('sc_profiles')) return;
+  const d = {}; let any = false;
+  PROFILE_FIELDS.forEach(k => { const v = localStorage.getItem('listing_' + k); if (v) { d[k] = v; any = true; } });
+  if (any) { setProfiles({ 'メイン': d }); localStorage.setItem('sc_profile_current', 'メイン'); }
+}
+
 function copyQuickPrompt() {
   const q = document.getElementById('quick_text').value.trim();
   if (!q) { showToast('⚠️ 出したいサービスを一言で書いてください'); return; }
-  const p = `次の「出したいサービス」をもとに、出品ページ作成ツールの入力欄を埋めてください。
-【進め方】
-1. まず私に、次の質問を1回だけしてください。JSONはまだ出さないでください。
-   「強み・経歴・実績・資格などがあれば、簡単に教えてください（箇条書きでOK）。特になければ『なし』と答えてください」
-2. 私の答えを受け取ったら、下のJSONを作って返してください。
+  const prof = profileSummary();
+  const p = `次の「出したいサービス」をもとに、出品ページ作成ツールの入力欄（今回の商品についての項目）を埋めてください。
 
 【ルール】
-・"strength"（強み・経歴）には、私が質問に答えた内容と、あなたが私について確実に知っている事実だけを書くこと。作り話・推測・盛った表現は禁止。私が「なし」と答え、確かな事実もなければ "" （空欄）にすること
-・それ以外の項目で書かれていないことは、そのサービスで一般的に売れやすい内容を推測して埋めてよい
-・JSONを返すときは、JSONだけを返すこと（説明文や\`\`\`は不要）
+・書かれていないことは、そのサービスで一般的に売れやすい内容を推測して埋めてよい
+・下の「出品者のプロフィール」がある場合は、それに合う価格・ターゲット・内容にすること
+・出品者の経歴や実績を新しく作らないこと
+・JSONだけを返すこと（説明文や\`\`\`は不要）
 
 出したいサービス：${q}
+
+出品者のプロフィール：
+${prof || '（なし）'}
 
 {
   "site_name": "ココナラ／クラウドワークス／ランサーズ／SKIMA のどれか",
   "genre_major": "大ジャンル",
   "product_description": "出品したい商品の説明（1〜2文）",
-  "experience": "初出品／販売実績あり（〜10件）／販売実績あり（11件以上）のどれか",
-  "strength": "強み・経歴・アピールポイント",
   "price_range": "希望価格帯（例：3,000〜5,000円）",
   "delivery_speed": "納品スピード（例：3〜7日以内）",
   "revision_policy": "修正回数の方針（例：2回まで）",
   "delivery_format": "納品できる形式",
   "target": "想定ターゲット",
-  "target_attribute": "想定ターゲットの属性",
-  "tone": "文章のトーン",
-  "win_point": "競合と差別化したい点",
-  "avoid_patterns": "避けたい表現・失敗パターン",
-  "exclusions": "除外・対応不可項目"
+  "target_attribute": "想定ターゲットの属性"
 }`;
   copyText(p, '📋 コピーしました！ChatGPTやClaudeに貼ってください');
 }
@@ -967,7 +1168,8 @@ const QUICK_FIELDS = {
   experience:['出品経験レベル','出品経験'], strength:['強み・経歴・アピールポイント','強み','経歴'], price_range:['希望価格帯','価格帯','価格'],
   delivery_speed:['納品スピード','納期'], revision_policy:['修正回数の方針','修正回数'], delivery_format:['納品できる形式','納品形式'],
   target:['想定ターゲット','ターゲット'], target_attribute:['想定ターゲットの属性','ターゲットの属性','属性'], tone:['文章のトーン','トーン'],
-  win_point:['競合と差別化したい点','差別化'], avoid_patterns:['避けたい表現・失敗パターン','避けたい表現'], exclusions:['除外・対応不可項目','対応不可','除外']
+  win_point:['競合と差別化したい点','差別化'], avoid_patterns:['避けたい表現・失敗パターン','避けたい表現'], exclusions:['除外・対応不可項目','基本的に対応しないこと','対応不可','除外'],
+  usual_target:['いつも相手にしたい人','顧客像'], name:['プロフィールの名前','名前']
 };
 function parseLoose(raw) {
   let t = raw.replace(/[\u00a0\u3000\u2000-\u200b\u202f\u205f\ufeff]/g, ' ').replace(/```[a-zA-Z]*/g, '').replace(/[“”＂]/g, '"').replace(/[‘’]/g, "'").replace(/｛/g,'{').replace(/｝/g,'}').replace(/：(?=\s*")/g, ':');
@@ -1146,7 +1348,8 @@ ${siteName}で「${genreMajor || productDescription}」に合う検索を行い�
 
 【出品者情報】
 ・出品経験レベル：${experience || '未記入（AIが判断）'}
-・想定ターゲット：${target || '未記入（AIが判断）'}
+・想定ターゲット：${target || '未記入（「いつも相手にしたい人」と競合分析から、この商品で売れやすいターゲットをAIが判断）'}
+・いつも相手にしたい人（出品者の基本の顧客像）：${document.getElementById('usual_target').value.trim() || '未記入'}
 ・想定ターゲットの属性：${targetAttribute || '未記入（AIが判断）'}
 ・強み・経歴・アピールポイント：${strength || '未記入（経歴・実績・資格は作らないこと。出品文でも具体的な経歴には触れず、サービス内容や対応の丁寧さで信頼感を出すこと）'}
 ・希望価格帯：${priceRange || '未記入（AIが判断）'}
@@ -1319,6 +1522,8 @@ ${outputHeader}
 // Load on start
 window.addEventListener('DOMContentLoaded', () => {
   loadSaved();
+  migrateOldProfile();
+  renderProfileSelect();
   // Set default GAS URL if saved
   const savedGas = localStorage.getItem('listing_gas_url');
   if (savedGas) document.getElementById('gas_url').value = savedGas;
