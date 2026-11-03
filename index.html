@@ -372,10 +372,37 @@
   <div class="header-icon">🛍️</div>
   <h1>SellCraft</h1>
   <p style="font-size:12px;color:#6666aa;margin-top:2px;margin-bottom:4px;">出品設計アシスタント</p>
-  <p>裏バージョン｜ヒアリング情報入力用</p>
+  <p>入れるのは2つだけ。あとはAIが決めてくれます</p>
 </div>
 
 <div class="container">
+
+  <!-- ざっくり入力（任意） -->
+  <div class="card full-width">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">⚡</span> ざっくり入力（使わなくてもOK）</div>
+    </div>
+    <div class="card-body">
+      <div class="tips" style="margin-bottom:10px;">
+        出したいサービスを一言で書く →「AIへの依頼文をコピー」→ ChatGPTやClaudeに貼る → 返ってきた答えを下の「AIの答え」に貼って「反映」。<br>
+        入力欄がまとめて埋まります。もちろん、下の欄に直接入れても大丈夫です。
+      </div>
+      <div class="form-row">
+        <label>出したいサービスを一言で</label>
+        <textarea id="quick_text" rows="2" placeholder="例：ココナラで、Canvaでシンプルなロゴを作るサービスを5,000円くらいで出したい。副業の人向け。"></textarea>
+      </div>
+      <div class="output-actions" style="justify-content:flex-start;margin-bottom:12px;">
+        <button class="btn btn-secondary" onclick="copyQuickPrompt()">📋 AIへの依頼文をコピー</button>
+      </div>
+      <div class="form-row">
+        <label>AIの答え（そのまま貼る）</label>
+        <textarea id="quick_answer" rows="3" placeholder="AIが返してきた { ... } の部分をそのまま貼り付け"></textarea>
+      </div>
+      <div class="output-actions" style="justify-content:flex-start;">
+        <button class="btn btn-primary" onclick="applyQuickAnswer()">↓ 入力欄に反映</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 基本情報 -->
   <div class="card full-width">
@@ -403,7 +430,7 @@
           </select>
         </div>
         <div class="form-row">
-          <label>大ジャンル <span class="req">＊</span></label>
+          <label>大ジャンル（空欄ならAIが判断）</label>
           <select id="genre_major_select" onchange="onGenreMajorChange(this)">
             <option value="">選択してください</option>
             <option value="デザイン・制作">デザイン・制作</option>
@@ -570,15 +597,23 @@
   <!-- 出力先設定 -->
   <div class="card full-width">
     <div class="card-header">
-      <div class="card-title"><span class="icon">⚙️</span> 出力先設定</div>
+      <div class="card-title"><span class="icon">⚙️</span> 結果の受け取り方</div>
       <label class="save-toggle">
-        <input type="checkbox" id="save_config" onchange="onToggle()">
+        <input type="checkbox" id="save_config" onchange="onToggle()" checked>
         <span class="toggle-track"></span>
           <span style="color:#c084fc;font-size:10px;font-weight:700;">保存</span>
       </label>
     </div>
     <div class="card-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-row">
+        <label>受け取り方</label>
+        <select id="output_mode" onchange="onOutputModeChange()">
+          <option value="file">Excelファイルで受け取る（おすすめ・準備なし）</option>
+          <option value="gas">GASでGoogleスプレッドシートに自動で書き込む</option>
+        </select>
+        <div class="placeholder-hint">💡 「Excelファイル」ならGASの準備は不要。Manusが4シート入りのExcelを渡してくれます</div>
+      </div>
+      <div id="gas_fields" style="display:none;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
         <div class="form-row">
           <label>GAS URL <span class="req">＊</span></label>
           <input type="url" id="gas_url" placeholder="https://script.google.com/macros/s/...">
@@ -597,7 +632,8 @@
   <div class="card full-width">
     <div class="card-body">
       <div class="actions">
-        <button class="btn btn-primary" onclick="generate()">✨ プロンプトを生成する</button>
+        <button class="btn btn-primary" onclick="generateAndGo()">🚀 作成してManusを開く</button>
+        <button class="btn btn-secondary" onclick="generate()">✨ プロンプトだけ作る</button>
         <button class="btn btn-save" onclick="saveAll()">💾 固定情報を保存</button>
         <button class="btn btn-danger" onclick="showResetModal()">🗑️ 全て初期化</button>
       </div>
@@ -625,7 +661,9 @@
     <div class="card-body">
       <div class="tips">
         <strong>💡 使い方</strong><br>
-        ・大ジャンルを入力 → 「プロンプトを生成する」を押す → 「コピー」でManusに貼り付ける<br>
+        ・サイト名と商品の説明を入れる →「🚀 作成してManusを開く」→ 開いたManusに貼り付けて（Ctrl+V ／ Macは ⌘+V）送信<br>
+        ・空欄の項目は、Manusが競合分析から決めてレポートに書いてくれます<br>
+        ・結果はExcelファイル（4シート）で届きます。Googleドライブに入れればスプレッドシートで開けます<br>
         <strong>💾 保存について</strong><br>
         ・トグルで「保存」にした項目は「固定情報を保存」ボタンで保存できます。次回起動時に自動で読み込まれます<br>
         ・大ジャンルはブラウザを閉じると消えます<br>
@@ -656,7 +694,7 @@
 const SAVE_KEYS = {
   about: ['experience','strength','price_range','price_range_custom','delivery_format','delivery_speed','delivery_speed_custom','revision_policy','revision_policy_custom'],
   strategy: ['target','target_attribute','tone','tone_custom','win_point','ref_urls','avoid_patterns','exclusions'],
-  config: ['gas_url','sheet_url']
+  config: ['output_mode','gas_url','sheet_url']
 };
 
 function onGenreMajorChange(sel) {
@@ -780,6 +818,8 @@ function resetAll() {
   document.getElementById('count').value = '20';
   document.getElementById('genre_major_select').selectedIndex = 0;
   document.getElementById('genre_major').style.display = 'none';
+  document.getElementById('output_mode').value = 'file';
+  onOutputModeChange();
   document.getElementById('output').value = '';
   ['price_range_custom','revision_policy_custom','tone_custom','delivery_speed_custom'].forEach(id => {
     const el = document.getElementById(id);
@@ -819,6 +859,98 @@ function fallbackCopy(output) {
   }
 }
 
+function onOutputModeChange() {
+  const mode = document.getElementById('output_mode').value;
+  document.getElementById('gas_fields').style.display = mode === 'gas' ? 'grid' : 'none';
+}
+
+function selectOrCustom(selId, customId, val) {
+  if (!val) return;
+  const sel = document.getElementById(selId);
+  const has = Array.from(sel.options).some(o => o.value === val);
+  if (has) { sel.value = val; if (customId) document.getElementById(customId).style.display = 'none'; }
+  else if (customId) { sel.value = 'custom'; const c = document.getElementById(customId); c.style.display = 'block'; c.value = val; }
+}
+
+function copyText(text, msg) {
+  const done = () => showToast(msg);
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).then(done).catch(() => { fallbackText(text); done(); });
+  }
+  fallbackText(text); done(); return Promise.resolve();
+}
+function fallbackText(text) {
+  const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+  ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta);
+}
+
+function copyQuickPrompt() {
+  const q = document.getElementById('quick_text').value.trim();
+  if (!q) { showToast('⚠️ 出したいサービスを一言で書いてください'); return; }
+  const p = `次の「出したいサービス」をもとに、出品ページ作成ツールの入力欄を埋めてください。
+書かれていないことは、そのサービスで一般的に売れやすい内容を推測して埋めてください。
+答えは下のJSONだけを返してください（説明文や\`\`\`は不要）。
+
+出したいサービス：${q}
+
+{
+  "site_name": "ココナラ／クラウドワークス／ランサーズ／SKIMA のどれか",
+  "genre_major": "大ジャンル",
+  "product_description": "出品したい商品の説明（1〜2文）",
+  "experience": "初出品／販売実績あり（〜10件）／販売実績あり（11件以上）のどれか",
+  "strength": "強み・経歴・アピールポイント",
+  "price_range": "希望価格帯（例：3,000〜5,000円）",
+  "delivery_speed": "納品スピード（例：3〜7日以内）",
+  "revision_policy": "修正回数の方針（例：2回まで）",
+  "delivery_format": "納品できる形式",
+  "target": "想定ターゲット",
+  "target_attribute": "想定ターゲットの属性",
+  "tone": "文章のトーン",
+  "win_point": "競合と差別化したい点",
+  "avoid_patterns": "避けたい表現・失敗パターン",
+  "exclusions": "除外・対応不可項目"
+}`;
+  copyText(p, '📋 コピーしました！ChatGPTやClaudeに貼ってください');
+}
+
+function applyQuickAnswer() {
+  let t = document.getElementById('quick_answer').value.trim();
+  if (!t) { showToast('⚠️ AIの答えを貼ってください'); return; }
+  const m = t.match(/\{[\s\S]*\}/);
+  let d;
+  try { d = JSON.parse(m ? m[0] : t); } catch(e) { showToast('⚠️ 読み取れませんでした。{ から } までを貼ってください', 3500); return; }
+  const setv = (id, v) => { if (v) document.getElementById(id).value = v; };
+  selectOrCustom('site_name', null, d.site_name);
+  if (d.genre_major) selectOrCustom('genre_major_select', 'genre_major', d.genre_major);
+  if (d.genre_major && document.getElementById('genre_major_select').value !== 'custom') document.getElementById('genre_major').value = d.genre_major;
+  setv('product_description', d.product_description);
+  selectOrCustom('experience', null, d.experience);
+  setv('strength', d.strength);
+  selectOrCustom('price_range', 'price_range_custom', d.price_range);
+  selectOrCustom('delivery_speed', 'delivery_speed_custom', d.delivery_speed);
+  selectOrCustom('revision_policy', 'revision_policy_custom', d.revision_policy);
+  setv('delivery_format', d.delivery_format);
+  setv('target', d.target);
+  setv('target_attribute', d.target_attribute);
+  selectOrCustom('tone', 'tone_custom', d.tone);
+  setv('win_point', d.win_point);
+  setv('avoid_patterns', d.avoid_patterns);
+  setv('exclusions', d.exclusions);
+  showToast('✅ 反映しました！中身を確認して、違うところだけ直してください', 3500);
+}
+
+function generateAndGo() {
+  // 先にタブを開く（ブラウザのポップアップブロック対策）
+  const win = window.open('about:blank', '_blank');
+  const ok = generate();
+  if (!ok) { if (win) win.close(); return; }
+  const text = document.getElementById('output').value;
+  copyText(text, '📋 コピーしました！開いたManusに貼り付けて送信してください').finally(() => {
+    if (win) win.location.href = 'https://manus.im/app';
+    else showToast('⚠️ Manusが開けませんでした。manus.im を開いて貼り付けてください', 4000);
+  });
+}
+
 function generate() {
   const siteName = document.getElementById('site_name').value;
   const genreSelect = document.getElementById('genre_major_select');
@@ -831,19 +963,17 @@ function generate() {
 
   if (!siteName) {
     showToast('⚠️ サイト名を選択してください');
-    return;
+    return false;
   }
-  if (!genreMajor) {
-    showToast('⚠️ 大ジャンルを入力してください');
-    return;
-  }
+
   if (!productDescription) {
     showToast('⚠️ 出品したい商品の説明を入力してください');
-    return;
+    return false;
   }
-  if (!gasUrl) {
-    showToast('⚠️ GAS URLを入力してください');
-    return;
+  const outputMode = document.getElementById('output_mode').value;
+  if (outputMode === 'gas' && !gasUrl) {
+    showToast('⚠️ GAS URLを入力してください（または受け取り方を「Excelファイル」に）', 3500);
+    return false;
   }
 
   const experience = document.getElementById('experience').value;
@@ -866,6 +996,10 @@ function generate() {
   const avoidPatterns = document.getElementById('avoid_patterns').value.trim();
   const exclusions = document.getElementById('exclusions').value.trim();
 
+  const outputHeader = outputMode === 'gas'
+    ? `【出力形式】\n分析完了後、以下の4つのJSONを順番にPOSTリクエストで送信してください。\n送信先URL：${gasUrl}\n`
+    : `【出力形式】\n分析完了後、4つのシートを持つExcelファイル（.xlsx）を1つ作成し、ダウンロードできる形で渡してください。\n・ファイル名：出品設計_${(genreMajor || '分析').replace(/[\\/:*?"<>|]/g,'')}.xlsx\n・シート名：①競合構造分解／②市場構造分析／③推奨設計／④自動生成サンプル\n・各シートの中身は、下の4つのJSONの構造どおりにする（JSONは送信しない。表の設計図として使う）\n・①は1出品＝1行、1行目は見出し、見出し行は色付き・固定、セルは折り返し表示\n・②〜④は「■ セクション名」の見出し行の下に表を並べる\n・シート④の最後に「AIが決めた項目」セクションを追加し、未記入だった項目に何を決めたか・その理由を書く\n・あわせて、④の完成版サンプル出品文章を、そのままコピーして使えるテキスト（.txt）でも渡す\n`;
+
   const prompt = `あなたは出品設計アナリスト兼コピーライターです。
 
 【目的】
@@ -878,13 +1012,12 @@ function generate() {
 ・文章の丸写し禁止。必ず要約・構造分解すること
 ・取得した出品ページのURLを必ず保存すること
 ・過度な短時間アクセスはしないこと
-・JSONを送信する前に、JSON形式が正しいか必ず検証すること
-・送信後にレスポンスを確認し、エラーがあれば報告すること
+${outputMode === 'gas' ? '・JSONを送信する前に、JSON形式が正しいか必ず検証すること\n・送信後にレスポンスを確認し、エラーがあれば報告すること' : '・入力情報で「未記入」の項目は、競合分析の結果から最適な内容を自分で決めること。決めた内容と理由は、シート④の「AIが決めた項目」に必ず書くこと'}
 
 【処理ステップ】
 
 ■ STEP 1：出品ページの収集
-${siteName}で「${genreMajor}」の検索を行い、販売実績順（人気順）で上位${count}件の出品ページURLを取得する。
+${siteName}で「${genreMajor || productDescription}」に合う検索を行い（大ジャンルが未指定の場合は、商品の説明から最適な検索ワードを自分で決める）、販売実績順（人気順）で上位${count}件の出品ページURLを取得する。
 なお、出品者が提供しているサービスの内容は「${productDescription}」である。この内容に近い出品ページを優先して収集すること。
 
 ■ STEP 2：各ページの構造分解
@@ -923,33 +1056,30 @@ ${siteName}で「${genreMajor}」の検索を行い、販売実績順（人気�
 
 【基本情報】
 ・サイト名：${siteName}
-・大ジャンル：${genreMajor}
+・大ジャンル：${genreMajor || '未記入（AIが判断）'}
 ・出品したい商品の説明：${productDescription}
 ・収集件数：${count}件
 
 【出品者情報】
-・出品経験レベル：${experience || '未記入'}
-・想定ターゲット：${target || '未記入'}
-・想定ターゲットの属性：${targetAttribute || '未記入'}
-・強み・経歴・アピールポイント：${strength || '未記入'}
-・希望価格帯：${priceRange || '未記入'}
-・納品スピード：${deliverySpeed || '未記入'}
-・修正回数の方針：${revisionPolicy || '未記入'}
-・納品できる形式：${deliveryFormat || '未記入'}
-・文章のトーン：${tone || '未記入'}
-・競合と差別化したい点：${winPoint || '未記入'}
+・出品経験レベル：${experience || '未記入（AIが判断）'}
+・想定ターゲット：${target || '未記入（AIが判断）'}
+・想定ターゲットの属性：${targetAttribute || '未記入（AIが判断）'}
+・強み・経歴・アピールポイント：${strength || '未記入（AIが判断）'}
+・希望価格帯：${priceRange || '未記入（AIが判断）'}
+・納品スピード：${deliverySpeed || '未記入（AIが判断）'}
+・修正回数の方針：${revisionPolicy || '未記入（AIが判断）'}
+・納品できる形式：${deliveryFormat || '未記入（AIが判断）'}
+・文章のトーン：${tone || '未記入（AIが判断）'}
+・競合と差別化したい点：${winPoint || '未記入（AIが判断）'}
 ${refUrls ? `・参考にしたい競合URL：\n${refUrls}` : ''}
 ${avoidPatterns ? `・避けたい表現・失敗パターン：${avoidPatterns}` : ''}
 
 【除外・対応不可項目】
-・対応しないこと：${exclusions || '未記入'}
+・対応しないこと：${exclusions || '未記入（AIが判断）'}
 
 ---
 
-【出力形式】
-分析完了後、以下の4つのJSONを順番にPOSTリクエストで送信してください。
-送信先URL：${gasUrl}
-
+${outputHeader}
 --- 送信① シート①：競合構造分解 ---
 {
   "sheet_type": "competitors",
@@ -1054,7 +1184,7 @@ ${avoidPatterns ? `・避けたい表現・失敗パターン：${avoidPatterns}
       "title": "入力情報（確認）",
       "rows": [
         ["サイト名", "${siteName}"],
-        ["大ジャンル", "${genreMajor}"],
+        ["大ジャンル", "${genreMajor || 'AIが判断'}"],
         ["出品したい商品の説明", "${productDescription}"],
         ["収集件数", "${count}件"]
       ]
@@ -1099,6 +1229,7 @@ ${avoidPatterns ? `・避けたい表現・失敗パターン：${avoidPatterns}
 
   document.getElementById('output').value = prompt;
   showToast('✨ プロンプトを生成しました！');
+  return true;
 }
 
 // Load on start
@@ -1107,6 +1238,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Set default GAS URL if saved
   const savedGas = localStorage.getItem('listing_gas_url');
   if (savedGas) document.getElementById('gas_url').value = savedGas;
+  // 旧版でGAS URLを使っていた人はGASモードのまま
+  if (!localStorage.getItem('listing_output_mode') && savedGas) document.getElementById('output_mode').value = 'gas';
+  onOutputModeChange();
 });
 </script>
 </body>
