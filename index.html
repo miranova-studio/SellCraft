@@ -691,6 +691,23 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Copied Modal -->
+<div class="modal-overlay" id="copiedModal">
+  <div class="modal" style="max-width:420px;">
+    <div style="font-size:44px;margin-bottom:6px;">📋✅</div>
+    <h3 style="font-size:20px;">コピー済み</h3>
+    <p style="font-size:16px;line-height:1.8;color:var(--text);">
+      開いた<strong>Manus</strong>の入力欄に<br>
+      <strong style="font-size:20px;color:#c084fc;">貼り付けて送信</strong>してください<br>
+      <span style="font-size:14px;color:var(--text-sub);">Windows：Ctrl＋V ／ Mac：⌘＋V</span>
+    </p>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="openManusAgain()">Manusを開く</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('copiedModal').classList.remove('show')">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <!-- Reset Modal -->
 <div class="modal-overlay" id="resetModal">
   <div class="modal">
@@ -952,13 +969,21 @@ function applyQuickAnswer() {
   showToast('✅ 反映しました！中身を確認して、違うところだけ直してください', 3500);
 }
 
+function openManusAgain() {
+  const text = document.getElementById('output').value;
+  if (text) copyText(text, '📋 もう一度コピーしました');
+  window.open('https://manus.im/app', '_blank');
+  document.getElementById('copiedModal').classList.remove('show');
+}
+
 function generateAndGo() {
   // 先にタブを開く（ブラウザのポップアップブロック対策）
   const win = window.open('about:blank', '_blank');
   const ok = generate();
   if (!ok) { if (win) win.close(); return; }
   const text = document.getElementById('output').value;
-  copyText(text, '📋 コピーしました！開いたManusに貼り付けて送信してください').finally(() => {
+  copyText(text, '📋 コピーしました').finally(() => {
+    document.getElementById('copiedModal').classList.add('show');
     if (win) win.location.href = 'https://manus.im/app';
     else showToast('⚠️ Manusが開けませんでした。manus.im を開いて貼り付けてください', 4000);
   });
