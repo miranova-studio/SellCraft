@@ -954,12 +954,40 @@ function copyQuickPrompt() {
   copyText(p, '📋 コピーしました！ChatGPTやClaudeに貼ってください');
 }
 
+// AIの返事を寛容に読み取る（```、全角の引用符、末尾カンマ、コメント、「項目：値」形式にも対応）
+const QUICK_FIELDS = {
+  site_name:['サイト名','サイト'], genre_major:['大ジャンル','ジャンル'], product_description:['出品したい商品の説明','商品の説明','商品説明'],
+  experience:['出品経験レベル','出品経験'], strength:['強み・経歴・アピールポイント','強み','経歴'], price_range:['希望価格帯','価格帯','価格'],
+  delivery_speed:['納品スピード','納期'], revision_policy:['修正回数の方針','修正回数'], delivery_format:['納品できる形式','納品形式'],
+  target:['想定ターゲット','ターゲット'], target_attribute:['想定ターゲットの属性','ターゲットの属性','属性'], tone:['文章のトーン','トーン'],
+  win_point:['競合と差別化したい点','差別化'], avoid_patterns:['避けたい表現・失敗パターン','避けたい表現'], exclusions:['除外・対応不可項目','対応不可','除外']
+};
+function parseLoose(raw) {
+  let t = raw.replace(/```[a-zA-Z]*/g, '').replace(/[“”＂]/g, '"').replace(/[‘’]/g, "'").replace(/｛/g,'{').replace(/｝/g,'}').replace(/：(?=\s*")/g, ':');
+  const m = t.match(/\{[\s\S]*\}/);
+  if (m) {
+    let j = m[0].replace(/\/\/[^\n"]*$/gm, '').replace(/,\s*([}\]])/g, '$1');
+    try { const d = JSON.parse(j); if (d && typeof d === 'object') return d; } catch(e) {}
+  }
+  // JSONで読めない場合：1行ずつ「キー: 値」を拾う
+  const d = {};
+  t.split(/\n/).forEach(line => {
+    const mm = line.match(/^\s*[-・*]?\s*"?([^":：]+?)"?\s*[:：]\s*"?(.*?)"?\s*,?\s*$/);
+    if (!mm) return;
+    const k = mm[1].trim().replace(/^[「【]|[」】]$/g,''), v = mm[2].trim();
+    if (!v) return;
+    for (const [id, names] of Object.entries(QUICK_FIELDS)) {
+      if (k === id || names.includes(k)) { if (!d[id]) d[id] = v; break; }
+    }
+  });
+  return Object.keys(d).length ? d : null;
+}
+
 function applyQuickAnswer() {
   let t = document.getElementById('quick_answer').value.trim();
   if (!t) { showToast('⚠️ AIの答えを貼ってください'); return; }
-  const m = t.match(/\{[\s\S]*\}/);
-  let d;
-  try { d = JSON.parse(m ? m[0] : t); } catch(e) { showToast('⚠️ 読み取れませんでした。{ から } までを貼ってください', 3500); return; }
+  const d = parseLoose(t);
+  if (!d) { showToast('⚠️ 読み取れませんでした。AIの返事をもう一度そのまま全部貼ってください', 4000); return; }
   const setv = (id, v) => { if (v) document.getElementById(id).value = v; };
   selectOrCustom('site_name', null, d.site_name);
   if (d.genre_major) selectOrCustom('genre_major_select', 'genre_major', d.genre_major);
