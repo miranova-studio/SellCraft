@@ -373,7 +373,7 @@
   <h1>SellCraft</h1>
   <p style="font-size:12px;color:#6666aa;margin-top:2px;margin-bottom:4px;">出品設計アシスタント</p>
   <p>入れるのは2つだけ。あとはAIが決めてくれます</p>
-  <p style="font-size:10px;opacity:0.5;">ver 2026.11.03-c</p>
+  <p style="font-size:10px;opacity:0.5;">ver 2026.11.03-d</p>
 </div>
 
 <div class="container">
@@ -1182,6 +1182,13 @@ const QUICK_FIELDS = {
   usual_target:['いつも相手にしたい人','顧客像'], name:['プロフィールの名前','名前']
 };
 function parseLoose(raw) {
+  // コピー元によって混ざる記号を元に戻す（&#x20; などのHTML表記、行末の \ 、Markdownのエスケープ）
+  raw = String(raw)
+    .replace(/&#x([0-9a-f]+);/gi, (m, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (m, n) => String.fromCodePoint(parseInt(n, 10)))
+    .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+    .replace(/\\\s*$/gm, '')
+    .replace(/\\([\[\]{}()*_#.!`~>|+\-])/g, '$1');
   let t = raw.replace(/[\u00a0\u3000\u2000-\u200b\u202f\u205f\ufeff]/g, ' ').replace(/```[a-zA-Z]*/g, '').replace(/[“”＂]/g, '"').replace(/[‘’]/g, "'").replace(/｛/g,'{').replace(/｝/g,'}').replace(/：(?=\s*")/g, ':');
   const m = t.match(/\{[\s\S]*\}/);
   if (m) {
