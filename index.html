@@ -407,6 +407,7 @@
             <label>AIの答え（そのまま全部貼る）</label>
             <textarea id="profile_answer" rows="3" placeholder="AIが最後に出した答えを、そのまま全部貼ってください"></textarea>
             <div><button class="btn btn-primary" style="margin-top:6px;" onclick="applyProfileAnswer()">↓ 読み取る</button></div>
+            <div class="placeholder-hint" id="profile_answer_msg" style="font-size:13px;"></div>
           </div>
           <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
           <div class="form-row">
@@ -1102,7 +1103,9 @@ function copyProfileInterview() {
 }
 function applyProfileAnswer() {
   const d = parseLoose(document.getElementById('profile_answer').value || '');
-  if (!d) { showToast('⚠️ 読み取れませんでした。AIの最後の答えをそのまま全部貼ってください', 4000); return; }
+  const msg = document.getElementById('profile_answer_msg');
+  if (!d) { msg.textContent = '⚠️ 読み取れませんでした（コード：P1）。AIの最後の答えをそのまま全部貼ってください'; showToast('⚠️ 読み取れませんでした（P1）', 4000); return; }
+  msg.textContent = '✅ 読み取りました。下の欄を確認して「💾 この内容で保存」を押すと保存されます';
   if (d.name) document.getElementById('profile_name').value = d.name;
   ['strength','win_point','avoid_patterns','exclusions','usual_target'].forEach(k => { if (d[k]) document.getElementById(k).value = d[k]; });
   selectOrCustom('experience', null, d.experience);
@@ -1115,7 +1118,13 @@ function exportProfiles() {
   copyText(JSON.stringify({ sellcraft_profiles: ps }), '📤 コピーしました。メモ帳や別のパソコンのSellCraftに貼ってください');
 }
 function importProfiles() {
-  let d; try { d = JSON.parse(document.getElementById('profile_import').value.trim()); } catch(e) {}
+  const raw = document.getElementById('profile_import').value.trim();
+  let d; try { d = JSON.parse(raw); } catch(e) { d = parseLoose(raw); }
+  // AIインタビューの答え（プロフィール1件）をこちらに貼った場合も受け付ける
+  if (d && !d.sellcraft_profiles && (d.strength || d.win_point || d.usual_target)) {
+    document.getElementById('profile_answer').value = raw; document.getElementById('profile_import').value = '';
+    applyProfileAnswer(); return;
+  }
   const incoming = d && (d.sellcraft_profiles || d);
   if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) { showToast('⚠️ 読み込めませんでした。書き出した文字をそのまま貼ってください', 4000); return; }
   const ps = getProfiles(); Object.assign(ps, incoming); setProfiles(ps);
