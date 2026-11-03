@@ -75,8 +75,16 @@
     gap: 16px;
   }
 
+  .more-box { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  .more-summary { cursor: pointer; list-style: none; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; font-weight: 700; color: #c084fc; font-size: 15px; }
+  .more-summary::-webkit-details-marker { display: none; }
+  .more-summary > span:first-child::before { content: '▶ '; display: inline-block; transition: transform .2s; }
+  .more-box[open] .more-summary > span:first-child::before { content: '▼ '; }
+  .more-sub { font-size: 12px; font-weight: 400; color: var(--text-sub); }
+  .more-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 12px 14px; }
   @media (max-width: 680px) {
     .container { grid-template-columns: 1fr; }
+    .more-inner { grid-template-columns: 1fr; padding: 0 8px 12px; }
     .full-width { grid-column: 1; }
   }
 
@@ -373,7 +381,7 @@
   <h1>SellCraft</h1>
   <p style="font-size:12px;color:#6666aa;margin-top:2px;margin-bottom:4px;">出品設計アシスタント</p>
   <p>入れるのは2つだけ。あとはAIが決めてくれます</p>
-  <p style="font-size:10px;opacity:0.5;">ver 2026.11.03-d</p>
+  <p style="font-size:10px;opacity:0.5;">ver 2026.11.03-e</p>
 </div>
 
 <div class="container">
@@ -501,9 +509,17 @@
       <div class="actions" style="margin-top:6px;">
         <button class="btn btn-primary" onclick="generateAndGo()">🚀 作成してManusを開く</button>
       </div>
-      <div class="placeholder-hint" style="margin-top:8px;">💡 これだけで完成します。下の項目はすべて任意で、空欄はManusが競合分析から決めてくれます。こだわりがある項目だけ入れてください</div>
+      <div class="placeholder-hint" style="margin-top:8px;">💡 これだけで完成します。価格・ターゲットなどを自分で決めたいときだけ、下の「⚙️ くわしく設定する」を開いてください。空欄はManusが競合分析から決めてくれます</div>
     </div>
   </div>
+
+  <!-- くわしく設定（折りたたみ） -->
+  <details class="full-width more-box" id="more_details">
+    <summary class="more-summary">
+      <span>⚙️ くわしく設定する（任意）</span>
+      <span class="more-sub">ざっくり入力・検索条件・今回の条件・今回のターゲット</span>
+    </summary>
+    <div class="more-inner">
 
   <!-- ざっくり入力（任意） -->
   <div class="card full-width">
@@ -677,6 +693,9 @@
       </div>
     </div>
   </div>
+
+    </div>
+  </details>
 
   <!-- 出力先設定 -->
   <div class="card full-width">
@@ -1244,6 +1263,7 @@ function applyQuickAnswer() {
   setv('win_point', d.win_point);
   setv('avoid_patterns', d.avoid_patterns);
   setv('exclusions', d.exclusions);
+  document.getElementById('more_details').open = true;
   showToast('✅ 反映しました！中身を確認して、違うところだけ直してください', 3500);
 }
 
