@@ -412,23 +412,29 @@
       <button class="clear-btn" onclick="clearSection('quick')">クリア</button>
     </div>
     <div class="card-body">
-      <div class="tips" style="margin-bottom:10px;">
-        出したいサービスを一言で書く →「AIへの依頼文をコピー」→ ChatGPTやClaudeに貼る → 返ってきた答えを下の「AIの答え」に貼って「反映」。<br>
-        入力欄がまとめて埋まります。もちろん、下の欄に直接入れても大丈夫です。
+      <div class="tips" style="margin-bottom:12px;">
+        下の項目を自分で考えるのが大変なとき用です。<strong>ChatGPTやClaudeに考えてもらい、その答えで下の欄をまとめて埋めます。</strong><br>
+        自分で入れる場合は、ここは飛ばしてOKです。
       </div>
       <div class="form-row">
-        <label>出したいサービスを一言で</label>
+        <label>① 出したいサービスを、普段の言葉で書く</label>
         <textarea id="quick_text" rows="2" placeholder="例：ココナラで、Canvaでシンプルなロゴを作るサービスを5,000円くらいで出したい。副業の人向け。"></textarea>
       </div>
-      <div class="output-actions" style="justify-content:flex-start;margin-bottom:12px;">
-        <button class="btn btn-secondary" onclick="copyQuickPrompt()">📋 AIへの依頼文をコピー</button>
+      <div class="form-row">
+        <label>② このボタンを押す（AIへのお願い文がコピーされます）</label>
+        <div><button class="btn btn-secondary" onclick="copyQuickPrompt()">📋 AIへのお願い文をコピー</button></div>
       </div>
       <div class="form-row">
-        <label>AIの答え（そのまま貼る）</label>
-        <textarea id="quick_answer" rows="3" placeholder="AIが返してきた { ... } の部分をそのまま貼り付け"></textarea>
+        <label style="text-transform:none;">③ ChatGPTかClaudeを開いて貼り付け、送信する</label>
+        <div class="placeholder-hint" style="margin-top:0;">Windows：Ctrl＋V ／ Mac：⌘＋V で貼り付け → 送信</div>
       </div>
-      <div class="output-actions" style="justify-content:flex-start;">
-        <button class="btn btn-primary" onclick="applyQuickAnswer()">↓ 入力欄に反映</button>
+      <div class="form-row">
+        <label>④ AIの返事を全部コピーして、ここに貼る</label>
+        <textarea id="quick_answer" rows="3" placeholder="AIの返事をそのまま全部貼ってOK（{ } で囲まれた部分があれば読み取ります）"></textarea>
+      </div>
+      <div class="form-row">
+        <label>⑤ このボタンを押すと、下の欄が自動で埋まります</label>
+        <div><button class="btn btn-primary" onclick="applyQuickAnswer()">↓ 下の欄に反映する</button></div>
       </div>
     </div>
   </div>
