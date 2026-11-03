@@ -381,7 +381,7 @@
   <h1>SellCraft</h1>
   <p style="font-size:12px;color:#6666aa;margin-top:2px;margin-bottom:4px;">出品設計アシスタント</p>
   <p>入れるのは2つだけ。あとはAIが決めてくれます</p>
-  <p style="font-size:10px;opacity:0.5;">ver 2026.11.03-g</p>
+  <p style="font-size:10px;opacity:0.5;">ver 2026.11.03-h</p>
 </div>
 
 <div class="container">
@@ -479,6 +479,54 @@
               <button class="btn btn-secondary" onclick="importProfiles()">📥 読み込む</button>
             </div>
           </details>
+        </div>
+      </details>
+
+      <div class="form-row" style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;">
+        <label>＋ 追加セット（サービスの種類ごと・複数選べる・任意）</label>
+        <div class="placeholder-hint" style="margin-top:0;">「LP用」「スライド資料用」のように、そのサービスだけの実績・避けたい表現・対応しないこと・基本の条件を保存しておき、上のプロフィールに足して使います</div>
+        <div id="addon_list" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:8px;"></div>
+        <div><button class="btn btn-secondary" style="margin-top:8px;" onclick="newAddon()">＋ 追加セットを新しく作る</button></div>
+      </div>
+      <details id="addon_details" style="margin-top:6px;">
+        <summary style="cursor:pointer;font-weight:700;color:#c084fc;padding:6px 0;">✏️ 追加セットを作る・直す（開く）</summary>
+        <div style="margin-top:12px;">
+          <div class="form-row">
+            <label>直す追加セット</label>
+            <select id="addon_edit_select" onchange="fillAddonFields(this.value)"></select>
+          </div>
+          <div class="tips" style="margin-bottom:12px;">
+            <strong>AIにインタビューしてもらって作る方法</strong>（自分で直接入れてもOK）<br>
+            ① サービスの種類を下の「追加セットの名前」に入れる（例：LP用）→ ② 質問文をコピー → ③ ChatGPTかClaudeに貼って質問に答える → ④ 最後の答えを全部貼る → ⑤「読み取る」
+          </div>
+          <div class="form-row">
+            <label>追加セットの名前 <span class="req">＊</span></label>
+            <input type="text" id="addon_name" placeholder="例：LP用・スライド資料用・ロゴ用">
+          </div>
+          <div class="form-row">
+            <div><button class="btn btn-secondary" onclick="copyAddonInterview()">📋 AIへの質問文をコピー</button></div>
+          </div>
+          <div class="form-row">
+            <label>AIの答え（そのまま全部貼る）</label>
+            <textarea id="addon_answer" rows="3" placeholder="AIが最後に出した答えを、そのまま全部貼ってください"></textarea>
+            <div><button class="btn btn-primary" style="margin-top:6px;" onclick="applyAddonAnswer()">↓ 読み取る</button></div>
+            <div class="placeholder-hint" id="addon_answer_msg" style="font-size:13px;"></div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+          <div class="form-row"><label>このサービスの実績・強み</label><textarea id="addon_strength" rows="3" placeholder="例：LP制作の実績・使うツール（STUDIO、Figmaなど）"></textarea></div>
+          <div class="form-row"><label>このサービスで避けたい表現</label><textarea id="addon_avoid" rows="2" placeholder="例：「CVR○倍」など根拠のない数字"></textarea></div>
+          <div class="form-row"><label>このサービスで対応しないこと</label><textarea id="addon_exclusions" rows="2" placeholder="例：サーバーへの公開作業、独自ドメイン取得代行"></textarea></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-row"><label>基本の価格</label><input type="text" id="addon_price" placeholder="例：30,000〜50,000円"></div>
+            <div class="form-row"><label>基本の納期</label><input type="text" id="addon_speed" placeholder="例：7〜14日"></div>
+            <div class="form-row"><label>基本の修正回数</label><input type="text" id="addon_revision" placeholder="例：2回まで"></div>
+            <div class="form-row"><label>基本の納品形式</label><input type="text" id="addon_format" placeholder="例：HTML一式・Figmaデータ"></div>
+          </div>
+          <div class="placeholder-hint">💡 基本の条件は、「⚙️ くわしく設定する」の「今回の条件」が空欄のときに使われます</div>
+          <div class="actions" style="margin-top:8px;">
+            <button class="btn btn-save" onclick="saveAddon()">💾 この追加セットを保存</button>
+            <button class="btn btn-danger" onclick="deleteAddon(event)">🗑️ この追加セットを削除</button>
+          </div>
         </div>
       </details>
     </div>
@@ -770,6 +818,7 @@
         ・結果はExcelファイル（4シート）と出品文のテキストで届きます。Googleドライブに入れればスプレッドシートで開けます<br>
         <strong>💾 保存について</strong><br>
         ・プロフィールは「💾 この内容で保存」で保存されます。いくつでも作って切り替えられます<br>
+        ・「＋ 追加セット」は「LP用」「スライド資料用」など、サービスの種類ごとの実績・避けたい表現・対応しないこと・基本の条件。チェックを入れたものがプロフィールに足されて送られます（複数OK）<br>
         ・プロフィールはこのブラウザの中にだけ保存されます。別のパソコンで使うときや控えを取るときは、プロフィール内の「別のパソコン・ブラウザに移す」で書き出してください<br>
         ・くわしく設定の項目は、各枠の「保存」をオンにして「💾 固定情報を保存」を押すと、次回も自動で入ります。大ジャンルはブラウザを閉じると消えます<br>
         <strong>🔄 クリアについて</strong><br>
@@ -957,6 +1006,7 @@ function resetAll() {
     if (el) el.checked = false;
   });
   renderProfileSelect();
+  renderAddons();
   hideResetModal();
   showToast('🗑️ 全て初期化しました');
 }
@@ -1041,8 +1091,10 @@ function updateProfileStatus() {
   const msg = !name
     ? '⚠️ プロフィール未設定。上の「👤 プロフィール」を1回作っておくと、出品文があなたらしく具体的になります'
     : (has ? `✅ プロフィール「${name}」の強み・経歴を使います` : `⚠️ プロフィール「${name}」に強み・経歴が入っていません`);
-  document.getElementById('profile_status').textContent = msg;
-  document.getElementById('top_profile_status').textContent = msg;
+  const ad = getSelectedAddons();
+  const full = msg + (ad.length ? `　＋ 追加セット：${ad.join('・')}` : '');
+  document.getElementById('profile_status').textContent = full;
+  document.getElementById('top_profile_status').textContent = full;
 }
 function onProfileSelect() {
   const name = document.getElementById('profile_select').value;
@@ -1080,10 +1132,128 @@ function deleteProfile() {
   renderProfileSelect();
   showToast(`🗑️ 「${name}」を削除しました`);
 }
+// ===== 追加セット（サービスの種類ごと。ベースのプロフィールに足して使う） =====
+const ADDON_FIELDS = ['addon_strength','addon_avoid','addon_exclusions','addon_price','addon_speed','addon_revision','addon_format'];
+function getAddons() { try { return JSON.parse(localStorage.getItem('sc_addons') || '{}'); } catch(e) { return {}; } }
+function setAddons(o) { localStorage.setItem('sc_addons', JSON.stringify(o)); }
+function getSelectedAddons() {
+  let sel = []; try { sel = JSON.parse(localStorage.getItem('sc_addons_selected') || '[]'); } catch(e) {}
+  const as = getAddons(); return sel.filter(n => as[n]);
+}
+function renderAddons() {
+  const as = getAddons(), names = Object.keys(as), sel = getSelectedAddons();
+  const list = document.getElementById('addon_list');
+  list.innerHTML = names.length ? '' : '<span class="placeholder-hint" style="margin:0;">まだありません</span>';
+  names.forEach(n => {
+    const lb = document.createElement('label');
+    lb.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:14px;color:var(--text);cursor:pointer;text-transform:none;';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = n; cb.checked = sel.includes(n);
+    cb.style.cssText = 'width:auto;'; cb.onchange = onAddonToggle;
+    lb.appendChild(cb); lb.appendChild(document.createTextNode(n)); list.appendChild(lb);
+  });
+  const es = document.getElementById('addon_edit_select'); const cur = es.value;
+  es.innerHTML = '';
+  const nw = document.createElement('option'); nw.value = ''; nw.textContent = '（新しく作る）'; es.appendChild(nw);
+  names.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; es.appendChild(o); });
+  es.value = names.includes(cur) ? cur : '';
+  updateProfileStatus();
+}
+function onAddonToggle() {
+  const sel = Array.from(document.querySelectorAll('#addon_list input:checked')).map(c => c.value);
+  localStorage.setItem('sc_addons_selected', JSON.stringify(sel));
+  updateProfileStatus();
+}
+function fillAddonFields(name) {
+  const d = getAddons()[name] || {};
+  document.getElementById('addon_name').value = name || '';
+  ADDON_FIELDS.forEach(k => { document.getElementById(k).value = d[k] || ''; });
+  document.getElementById('addon_answer_msg').textContent = '';
+}
+function newAddon() {
+  document.getElementById('addon_edit_select').value = '';
+  fillAddonFields(''); document.getElementById('addon_answer').value = '';
+  document.getElementById('addon_details').open = true;
+  document.getElementById('addon_name').focus();
+  showToast('✏️ 名前（例：LP用）を入れてから作ってください', 3000);
+}
+function saveAddon() {
+  const name = document.getElementById('addon_name').value.trim();
+  if (!name) { showToast('⚠️ 追加セットの名前を入れてください'); return; }
+  const as = getAddons(), d = {};
+  ADDON_FIELDS.forEach(k => { d[k] = document.getElementById(k).value.trim(); });
+  as[name] = d; setAddons(as);
+  const sel = getSelectedAddons(); if (!sel.includes(name)) sel.push(name);
+  localStorage.setItem('sc_addons_selected', JSON.stringify(sel));
+  renderAddons(); document.getElementById('addon_edit_select').value = name;
+  showToast(`💾 追加セット「${name}」を保存しました（選択中にしました）`, 3000);
+}
+function deleteAddon(ev) {
+  const name = document.getElementById('addon_edit_select').value;
+  if (!name) { showToast('⚠️ 「直す追加セット」で消すものを選んでください'); return; }
+  const btn = ev && ev.target;
+  if (btn && btn.dataset.confirm !== name) { btn.dataset.confirm = name; btn.textContent = `本当に「${name}」を削除？もう一度押す`; setTimeout(() => { btn.dataset.confirm=''; btn.textContent='🗑️ この追加セットを削除'; }, 4000); return; }
+  const as = getAddons(); delete as[name]; setAddons(as);
+  if (btn) { btn.dataset.confirm=''; btn.textContent='🗑️ この追加セットを削除'; }
+  fillAddonFields(''); renderAddons();
+  showToast(`🗑️ 「${name}」を削除しました`);
+}
+function addonsCombined() {
+  const as = getAddons(), sel = getSelectedAddons();
+  const pick = k => sel.map(n => (as[n] || {})[k] ? `【${n}】${as[n][k]}` : '').filter(Boolean).join('\n');
+  const first = k => { for (const n of sel) if ((as[n] || {})[k]) return as[n][k]; return ''; };
+  return { names: sel, strength: pick('addon_strength'), avoid: pick('addon_avoid'), exclusions: pick('addon_exclusions'),
+    price: first('addon_price'), speed: first('addon_speed'), revision: first('addon_revision'), format: first('addon_format') };
+}
+function joinText(a, b) { return [a, b].filter(Boolean).join('\n'); }
+function copyAddonInterview() {
+  const name = document.getElementById('addon_name').value.trim();
+  if (!name) { showToast('⚠️ 先に「追加セットの名前」（例：LP用）を入れてください', 3000); return; }
+  const svc = name.replace(/用$/, '');
+  const p = `あなたはフリーランスの出品ページづくりを手伝うインタビュアーです。
+私はすでに「自分全体のプロフィール」を持っています。今回はそれに足す、「${svc}」のサービスだけに関する追加情報を作ります。
+
+【進め方】
+・下の質問を、1つずつ順番に私に聞いてください（一度に全部聞かない）。
+・あなたが私について確実に知っていることがあれば、「〇〇で合っていますか？」と確認する形で聞いてOKです。
+・私が「なし」「わからない」と答えた項目は空欄にしてください。
+・全部聞き終わったら、最後に下のJSONだけを返してください（説明文や\`\`\`は不要）。
+
+【ルール】
+・「${svc}」に関係することだけを書く（全体の経歴などは書かない）。
+・私が答えたことと、あなたが私について確実に知っている事実だけを書く。作り話・推測・盛った表現は禁止。
+
+【質問】
+1. 「${svc}」の実績・経験（件数、作ったもの、学んだこと）
+2. 「${svc}」で使うツール・得意なこと
+3. 「${svc}」の出品で使いたくない表現
+4. 「${svc}」で引き受けないこと
+5. 「${svc}」の基本の価格・納期・修正回数・納品形式
+
+{
+  "addon_strength": "このサービスの実績・強み（1と2をまとめる）",
+  "addon_avoid": "このサービスで避けたい表現",
+  "addon_exclusions": "このサービスで対応しないこと",
+  "addon_price": "基本の価格",
+  "addon_speed": "基本の納期",
+  "addon_revision": "基本の修正回数",
+  "addon_format": "基本の納品形式"
+}`;
+  copyText(p, '📋 コピーしました！ChatGPTかClaudeに貼って送信してください');
+}
+function applyAddonAnswer() {
+  const d = parseLoose(document.getElementById('addon_answer').value || '');
+  const msg = document.getElementById('addon_answer_msg');
+  if (!d) { msg.textContent = '⚠️ 読み取れませんでした。AIの最後の答えをそのまま全部貼ってください'; return; }
+  let n = 0; ADDON_FIELDS.forEach(k => { if (d[k]) { document.getElementById(k).value = d[k]; n++; } });
+  msg.textContent = n ? '✅ 読み取りました。下の欄を確認して「💾 この追加セットを保存」を押すと保存されます' : '⚠️ 項目が見つかりませんでした。AIの最後の答えをそのまま全部貼ってください';
+}
+
 function profileSummary() {
   const g = id => (document.getElementById(id).value || '').trim();
   const tone = g('tone') === 'custom' ? g('tone_custom') : g('tone');
   const lines = [['強み・経歴', g('strength')], ['出品経験', g('experience')], ['自分らしさ・差別化の軸', g('win_point')], ['文章のトーン', tone], ['いつも相手にしたい人', g('usual_target')], ['基本的に対応しないこと', g('exclusions')]];
+  const ad = addonsCombined();
+  if (ad.names.length) lines.push(['追加セット', ad.names.join('・')], ['サービス別の実績・強み', ad.strength], ['サービス別の基本条件', [ad.price, ad.speed, ad.revision, ad.format].filter(Boolean).join('／')], ['サービス別に対応しないこと', ad.exclusions]);
   return lines.filter(l => l[1]).map(l => `・${l[0]}：${l[1]}`).join('\n');
 }
 function copyProfileInterview() {
@@ -1139,7 +1309,7 @@ function applyProfileAnswer() {
 function exportProfiles() {
   const ps = getProfiles();
   if (!Object.keys(ps).length) { showToast('⚠️ 保存したプロフィールがありません'); return; }
-  copyText(JSON.stringify({ sellcraft_profiles: ps }), '📤 コピーしました。メモ帳や別のパソコンのSellCraftに貼ってください');
+  copyText(JSON.stringify({ sellcraft_profiles: ps, sellcraft_addons: getAddons() }), '📤 コピーしました。メモ帳や別のパソコンのSellCraftに貼ってください');
 }
 function importProfiles() {
   const raw = document.getElementById('profile_import').value.trim();
@@ -1149,6 +1319,7 @@ function importProfiles() {
     document.getElementById('profile_answer').value = raw; document.getElementById('profile_import').value = '';
     applyProfileAnswer(); return;
   }
+  if (d && d.sellcraft_addons) { const as = getAddons(); Object.assign(as, d.sellcraft_addons); setAddons(as); renderAddons(); }
   const incoming = d && (d.sellcraft_profiles || d);
   if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) { showToast('⚠️ 読み込めませんでした。書き出した文字をそのまま貼ってください', 4000); return; }
   const ps = getProfiles(); Object.assign(ps, incoming); setProfiles(ps);
@@ -1202,7 +1373,7 @@ const QUICK_FIELDS = {
   delivery_speed:['納品スピード','納期'], revision_policy:['修正回数の方針','修正回数'], delivery_format:['納品できる形式','納品形式'],
   target:['想定ターゲット','ターゲット'], target_attribute:['想定ターゲットの属性','ターゲットの属性','属性'], tone:['文章のトーン','トーン'],
   win_point:['競合と差別化したい点','差別化'], avoid_patterns:['避けたい表現・失敗パターン','避けたい表現'], exclusions:['除外・対応不可項目','基本的に対応しないこと','対応不可','除外'],
-  usual_target:['いつも相手にしたい人','顧客像'], name:['プロフィールの名前','名前']
+  usual_target:['いつも相手にしたい人','顧客像'], addon_strength:['このサービスの実績・強み'], addon_avoid:['このサービスで避けたい表現'], addon_exclusions:['このサービスで対応しないこと'], addon_price:['基本の価格'], addon_speed:['基本の納期'], addon_revision:['基本の修正回数'], addon_format:['基本の納品形式'], name:['プロフィールの名前','名前']
 };
 function parseLoose(raw) {
   // コピー元によって混ざる記号を元に戻す（&#x20; などのHTML表記、行末の \ 、Markdownのエスケープ）
@@ -1317,24 +1488,25 @@ function generate() {
   }
 
   const experience = document.getElementById('experience').value;
-  const strength = document.getElementById('strength').value.trim();
+  const AD = addonsCombined();
+  const strength = joinText(document.getElementById('strength').value.trim(), AD.strength);
   const priceRangeSel = document.getElementById('price_range').value;
-  const priceRange = priceRangeSel === 'custom' ? document.getElementById('price_range_custom').value.trim() : priceRangeSel;
-  const deliveryFormat = document.getElementById('delivery_format').value.trim();
+  const priceRange = (priceRangeSel === 'custom' ? document.getElementById('price_range_custom').value.trim() : priceRangeSel) || AD.price;
+  const deliveryFormat = document.getElementById('delivery_format').value.trim() || AD.format;
   const deliverySpeedSel = document.getElementById('delivery_speed').value;
-  const deliverySpeed = deliverySpeedSel === 'custom'
+  const deliverySpeed = (deliverySpeedSel === 'custom'
     ? document.getElementById('delivery_speed_custom').value.trim()
-    : deliverySpeedSel;
+    : deliverySpeedSel) || AD.speed;
   const revisionSel = document.getElementById('revision_policy').value;
-  const revisionPolicy = revisionSel === 'custom' ? document.getElementById('revision_policy_custom').value.trim() : revisionSel;
+  const revisionPolicy = (revisionSel === 'custom' ? document.getElementById('revision_policy_custom').value.trim() : revisionSel) || AD.revision;
   const target = document.getElementById('target').value.trim();
   const targetAttribute = document.getElementById('target_attribute').value.trim();
   const toneSel = document.getElementById('tone').value;
   const tone = toneSel === 'custom' ? document.getElementById('tone_custom').value.trim() : toneSel;
   const winPoint = document.getElementById('win_point').value.trim();
   const refUrls = document.getElementById('ref_urls').value.trim();
-  const avoidPatterns = document.getElementById('avoid_patterns').value.trim();
-  const exclusions = document.getElementById('exclusions').value.trim();
+  const avoidPatterns = joinText(document.getElementById('avoid_patterns').value.trim(), AD.avoid);
+  const exclusions = joinText(document.getElementById('exclusions').value.trim(), AD.exclusions);
 
   const outputHeader = outputMode === 'gas'
     ? `【出力形式】\n分析完了後、以下の4つのJSONを順番にPOSTリクエストで送信してください。\n送信先URL：${gasUrl}\n`
@@ -1578,6 +1750,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadSaved();
   migrateOldProfile();
   renderProfileSelect();
+  renderAddons();
   // Set default GAS URL if saved
   const savedGas = localStorage.getItem('listing_gas_url');
   if (savedGas) document.getElementById('gas_url').value = savedGas;
